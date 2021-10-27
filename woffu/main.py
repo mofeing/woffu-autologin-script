@@ -6,34 +6,60 @@ import os.path
 from pathlib import Path
 from .woffu import Woffu
 
+CREDENTIALS_FILENAME = '.woffu-autologin-script.json'
+LEGACY_CREDENTIALS_FILENAME = 'data.json'
+
+def load_credentials():
+    credential_paths = default_credentials_paths()
+    for credentials_file in credential_paths:
+        if not os.path.exists(credentials_file):
+            continue
+
+        try:
+            print(f'Using credentials from {credentials_file}')
+            with open(credentials_file, "r") as json_data:
+                login_info = json.load(json_data)
+                username, password = itemgetter(
+                    "username",
+                    "password",
+                )(login_info)
+
+            return True, username, password
+
+        except (OSError, IOError, json.JSONDecodeError):
+            pass
+
+    # Ask for user input if there are no credential files created
+    username = input("Enter your Woffu username:\n")
+    password = getpass.getpass("Enter your password:\n")
+
+    return False, username, password
+
+
+def default_credentials_paths():
+    credential_files = [CREDENTIALS_FILENAME, LEGACY_CREDENTIALS_FILENAME]
+    credential_folders = [Path.home(), '.']
+    credential_paths = [os.path.join(d, f) for f in credential_files for d in credential_folders]
+    return credential_paths
+
+
 def run():
     print("Woffu Autologin Script\n")
-    credentials_file = os.path.join(Path.home(), "./data.json")
-    saved_credentials = os.path.exists(credentials_file)
-    if (saved_credentials):
-        with open(credentials_file, "r") as json_data:
-            login_info = json.load(json_data)
-            domain, username, password, user_id, company_id = itemgetter(
-                "domain",
-                "username",
-                "password",
-                "user_id",
-                "company_id"
-            )(login_info)
-    else:
-        username = input("Enter your Woffu username:\n")
-        password = getpass.getpass("Enter your password:\n")
 
-    client = Woffu(username, password)
-    if client.is_working_day_for_me():
+    has_saved_credentials, username, password = load_credentials()
+
+    woffunator = Woffu(username, password)
+    if woffunator.is_working_day_for_me():
         try:
-            client.sign_in()
+            woffunator.sign_in()
             print('Success!')
         except Exception as e:
-            print("Something went wrong when trying to log you in/out: {}".format(e.message))
+            print(f'Something went wrong when trying to log you in/out: {e.message}')
             sys.exit(1)
     else:
-        print("Not a working day. Enjoy!")
+        print('Not a working day. Enjoy!')
 
-    if (not saved_credentials):
-        client.save_data()
+    if (not has_saved_credentials):
+        credentials_path = default_credentials_paths()[0]
+        print(f'Saving credentials to file {credentials_path}')
+        woffunator.save_data(credentials_path)

@@ -1,6 +1,7 @@
 import requests
 import json
 from datetime import datetime, date
+from .exceptions import InvalidCredentials
 
 class Woffu:
     def __init__(self, username, password):
@@ -12,16 +13,19 @@ class Woffu:
 
     # aux functions
     def _get_auth_headers(self):
-        access_token = requests.post(
-            "https://app.woffu.com/token",
-            data = f"grant_type=password&username={self.username}&password={self.password}"
-        ).json()['access_token']
+        try:
+            access_token = requests.post(
+                "https://app.woffu.com/token",
+                data = f"grant_type=password&username={self.username}&password={self.password}"
+            ).json()['access_token']
 
-        return {
-            'Authorization': 'Bearer ' + access_token,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json;charset=utf-8'
-        }
+            return {
+                'Authorization': 'Bearer ' + access_token,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=utf-8'
+            }
+        except KeyError:
+            raise InvalidCredentials()
 
     def _get_domain_company_user_id(self):
         users = requests.get(
@@ -49,9 +53,9 @@ class Woffu:
         if response.status_code >= 400:
             raise Exception("Error trying to sign in or sign out.")
 
-    def save_data(self):
+    def save_data(self, credentials_path):
         #Store user/password/id to make less network requests in next logins
-        with open("data.json", "w") as login_info:
+        with open(credentials_path, "w") as login_info:
             json.dump(
                 {
                     "username": self.username,
