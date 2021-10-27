@@ -3,13 +3,15 @@ import json
 import sys
 from operator import itemgetter
 import os.path
+from pathlib import Path
 from .woffu import Woffu
 
 def run():
     print("Woffu Autologin Script\n")
-    saved_credentials = os.path.exists("./data.json")
+    credentials_file = os.path.join(Path.home(), "./data.json")
+    saved_credentials = os.path.exists(credentials_file)
     if (saved_credentials):
-        with open("./data.json", "r") as json_data:
+        with open(credentials_file, "r") as json_data:
             login_info = json.load(json_data)
             domain, username, password, user_id, company_id = itemgetter(
                 "domain",
