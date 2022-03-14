@@ -1,0 +1,19 @@
+name: Woffu Login
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@2
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - run: python -m woffu login
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
