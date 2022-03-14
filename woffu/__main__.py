@@ -22,14 +22,14 @@ parser.add_argument("cmd", help="", choices=["login", "logout"])
 args = parser.parse_args()
 
 try:
-    if args["cmd"] == "login":
+    if args.cmd == "login":
         woffunator.sign_in()
         print("Logged in!")
-    elif args["cmd"] == "logout":
+    elif args.cmd == "logout":
         raise NotImplementedError("logout")
         print("Logged out!")
     else:
-        print(f"Unknown command: {args['cmd']}")
+        print(f"Unknown command: {args.cmd}")
         sys.exit(1)
 except Exception as e:
     print(f"Something went wrong when trying to log you in/out: {e.message}")
