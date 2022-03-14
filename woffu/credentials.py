@@ -1,8 +1,8 @@
-import getpass
 import json
 from pathlib import Path
 from operator import itemgetter
 import os.path
+from os import environ
 
 CREDENTIALS_FILENAME = ".woffu-autologin-script.json"
 LEGACY_CREDENTIALS_FILENAME = "data.json"
@@ -29,10 +29,10 @@ def load_credentials():
             pass
 
     # Ask for user input if there are no credential files created
-    username = input("Enter your Woffu username:\n")
-    password = getpass.getpass("Enter your password:\n")
+    username = environ.get("USERNAME", None)
+    password = environ.get("PASSWORD", None)
 
-    return False, username, password
+    return (username is None or password is None), username, password
 
 
 def default_credentials_paths():
