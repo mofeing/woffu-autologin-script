@@ -1,4 +1,4 @@
-name: Woffu Sign In/Out
+name: Woffu Login
 on:
   workflow_dispatch:
 
@@ -18,7 +18,7 @@ jobs:
           cache: 'pip'
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - run: python -m woffu
+      - run: python -m woffu login
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
