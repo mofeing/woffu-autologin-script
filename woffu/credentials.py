@@ -32,7 +32,7 @@ def load_credentials():
     username = environ.get("USERNAME", None)
     password = environ.get("PASSWORD", None)
 
-    return (username is None or password is None), username, password
+    return (username is not None and password is not None), username, password
 
 
 def default_credentials_paths():
