@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
   schedule:
-  - cron: 0 9,13,14,18 * * 1,2,3,4,5
+  - cron: 0 8,12,13,17 * * 1,2,3,4,5
 
 jobs:
   login:
