@@ -10,4 +10,3 @@ I forked this project from the original to add support for automatic detection o
 The script won't sign in if today is detected as a non-working day.
 
 The simplest way to use it is to set up a cron job / scheduled task that signs you on/off. The script does not know anything about changes in your working hours (i.e. summer schedule) and you need to address that in your cron job.
- 
